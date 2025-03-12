@@ -1,0 +1,227 @@
+
+
+docker -h
+
+# Download and run image
+docker run hello-world
+
+# Just download image
+
+docker pull hello-world
+
+# list images
+docker image ls
+
+# list running containers
+docker ps
+
+# list all stopped and running containers
+
+docker ps -a
+
+# running nginx webserver
+
+docker run nginx
+#####################
+
+# Go to localhost
+# By default containers are isolated from the host network.
+# To be able to see the container from the host we need to publish a port
+
+docker run -p 80:80 nginx
+# or
+docker run -p 5000:80 nginx
+# Now we can see default nginx page
+######################
+
+# To run the container in the background so the cmd stays free we use:
+docker run -p 5000:80  -d nginx
+# returns container ID
+######################
+
+# You can refer to a container by its ID or its name if you have specified one:
+docker run -p 5000:80  -d --name my-nginx nginx
+
+# If you don't specify the name it will be randomly generated
+######################
+
+# To see the logs printed in the container, use:
+docker logs  container_name or container_id
+
+# or see it in docker desktop
+######################
+# Stop a container from Docker Desktop or cmd:
+docker stop container_name
+
+# Containers won't be removed unless we do it manually.
+
+# Remove all containers
+docker container prune
+
+# Use --rm to remove a container automatically.
+
+docker run -p 5000:80  -d --rm nginx
+
+
+######################
+# Use TAG to download a specific version of an image.
+# To download version 1.27 of nginx:
+
+docker run nginx:1.27
+
+# Tags might change the version they are pointing at.
+# better to use very specific tags.
+
+1.27 ----> 1.27.1
+1.27.0-bookworm  ----> 1.27.0
+
+# or search for the tag in docker hub.
+# or use digests (hashes).
+docker run -p 80:80 nginx@1301931031391ajfadfjfafdjafj
+
+######################
+# Containers can run with environmental variables and arguments passed at runtime.
+# Use -e to pass environmental variables.
+
+docker run -e ABC=123 -e DEF=456 python:3.12 python -c "import os; print(os.environ)"
+
+######################
+# Slim and Alpine images
+# In production and testing settings, Image size matters a lot.
+
+# Python comes with many different tags with many things preinstalled and various environments
+# Default python version is based on fully featured debian installed.
+# Slim tags are much more barebone versions of debian.
+# it is 10 times smaller than the original version.
+# Alpine tags are refered to alpine linux which is a lightweight linux distru
+# Since Alpine uses "musl libc" instead of "glibc", some Python packages
+# may require extra dependencies or manual installation.
+
+docker pull python:3.12-slim
+
+docker pull python:3.12-alpine
+
+
+######################
+# Debuging containers
+
+# To get access to container shell you can use docker desktop
+# or use this command :
+
+docker exec -it  hash_code  /bin/bash
+
+
+######################
+
+# Persistence
+
+# If we run this command multiple times we only see one copy of "RAN!"
+# because it clean it everytime.
+docker run python:3.12 python -c "f=f'/data.txt';open(f, 'a').write('RAN!\n');print(open(f).read())"
+
+# But many applications like databases have data that we want to be persist accross runs.
+# Even to be persist accross image changes like upgrading database version.
+
+# We can achieve that using mount.
+# It assigns a volume beyond lifecycle of containers.
+
+docker run -v mydata:/data python:3.12 python -c "f=f'/data/data.txt';open(f, 'a').write('RAN!\n');print(open(f).read())"
+
+
+######################
+mkdir mydata
+
+docker run -v C:\Users\Atlas\Desktop\mydata:/data python:3.12 python -c "f=f'/data/data.txt';open(f, 'a').write('RAN!\n');print(open(f).read())"
+
+
+
+######################
+
+# Custom web page instead of default nginx page.
+
+
+docker build -t mysite -f ./MySite/frontend0/Dockerfile .
+docker run -p 80:80 mysite
+######################
+# Layers
+# Each command in docker file is a layer and it caches them
+# If a parent command changes, All child commands will run again.
+# You can disable cache by --no-cache flag in docker build
+
+
+
+Docker caches layers to avoid redundant work. If a layer has already been built previously and the corresponding instruction hasn’t changed, Docker will reuse that layer, speeding up subsequent builds.
+If you change an instruction in the Dockerfile, all the layers after that instruction need to be rebuilt.
+
+
+docker build --no-cache .
+######################
+
+cd .\Mysite\backend\
+pip install -r requirements.txt
+
+
+cd ../..
+
+docker build -t mysite-backend -f ./MySite/backend0/Dockerfile  .
+docker run -p 8000:8000 mysite-backend
+
+docker build -t mysite -f ./MySite/frontend/Dockerfile .
+docker run -p 80:80 -d mysite
+docker run -p 8000:8000 -d mysite-backend
+######################
+
+# Multistage Builds
+What Are Multistage Builds?
+Multistage builds in Docker allow you to use multiple stages in a single Dockerfile, where each stage can have different base images and dependencies. The final image only includes what's necessary for running the application, making it much smaller and more efficient.
+
+Benefits of Multistage Builds
+✅ Reduces Image Size → By discarding unnecessary build-time dependencies.
+✅ Improves Security → Removes sensitive or unnecessary tools after the build.
+✅ Better Caching → Dependencies are built separately and reused if unchanged.
+✅ Easier Debugging → You can keep build dependencies separate from the runtime environment.
+
+
+######################
+
+# Docker Compose
+# Orchestrating many containers
+
+docker compose -f ./MySite/docker-compose.yml build
+docker compose -f ./MySite/docker-compose.yml up
+
+docker compose -f -d ./MySite/docker-compose.yml up
+
+# turn off and delete containers
+docker compose -f -d ./MySite/docker-compose.yml down
+
+docker compose -f -d ./MySite/docker-compose.yml stop
+docker compose -f -d ./MySite/docker-compose.yml start
+
+######################
+
+Push your image into docker hub and share the link.
+
+######################
+######################
+######################
+######################
+######################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

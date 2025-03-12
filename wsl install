@@ -1,0 +1,24 @@
+
+> netsh winsock reset
+
+
+In the search bar, search for "turn windows features on or off".
+Make sure these three options are checked:
+windows subsystem for linux, virtual machine platform, windows hypervisor platform
+
+
+Open a PowerShell prompt as an Administrator (we recommend using Windows Terminal) and run:
+
+> wsl --install
+> wsl --update --web-download
+
+To see all available distros and versions:
+> wsl --list --online
+
+You can install a version using a NAME from the output:
+
+> wsl --install -d Ubuntu-24.04
+
+To see all your currently installed distros and the version of WSL that they are using:
+
+> wsl -l -v
